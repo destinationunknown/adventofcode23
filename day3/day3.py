@@ -1,5 +1,8 @@
+from collections import defaultdict
 import regex as re
 from itertools import combinations
+import operator
+from functools import reduce
 
 data = open("input.txt", "r").read().strip().split("\n")
 
@@ -58,7 +61,26 @@ def part_one(data: list[str]):
     return res
 
 def part_two(data: list[str]):
-    ...
+    num_coords, symbol_coords = get_coords(data)
+    res = 0
+
+    gears = defaultdict(list)
+
+    for coord in num_coords:
+        num = num_coords[coord]
+        if (data[coord[0]][coord[1]] != str(num)[0]):
+            print(num, coord)
+        n = get_neighbours(num, coord)
+        valid_neighbours = list(filter(lambda x: x in symbol_coords, n))
+        for neighbour in valid_neighbours:
+            if symbol_coords[neighbour] == "*":
+                gears[neighbour].append(num)
+
+    for gear in gears:
+        if len(gears[gear]) == 2:
+            res += reduce(operator.mul, gears[gear])
+
+    return res
 
 
 print(part_one(data))
